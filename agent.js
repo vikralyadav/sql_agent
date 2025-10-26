@@ -1,7 +1,8 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-
+import { SqlDatabase } from "@langchain/classic/sql_db";
+import { DataSource } from "typeorm";
 
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
@@ -28,4 +29,23 @@ async function resolveDbPath() {
   const buf = Buffer.from(await resp.arrayBuffer());
   await fs.writeFile(localPath, buf);
   return localPath;
+}
+
+
+
+
+
+const  db = new SqlDatabase ;
+async function getDb() {
+  if (!db) {
+    const dbPath = await resolveDbFile();
+    const datasource = new DataSource({ type: "sqlite", database: dbPath });
+    db = await SqlDatabase.fromDataSourceParams({ appDataSource: datasource });
+  }
+  return db;
+}
+
+async function getSchema() {
+  const db = await getDb();
+  return await db.getTableInfo();
 }
