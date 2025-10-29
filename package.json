@@ -16,6 +16,7 @@
     "@langchain/google-genai": "^1.0.0",
     "dotenv": "^17.2.3",
     "langchain": "^1.0.1",
+    "ollama": "^0.6.0",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.27",
     "zod": "^4.1.12"
