@@ -13,6 +13,11 @@ import path from "node:path";
 
 
 
+import { SqlDatabase } from "@langchain/classic/sql_db";
+import { DataSource } from "typeorm";
+
+
+
 const url = "https://storage.googleapis.com/benchmarks-artifacts/chinook/Chinook.db";
 const localPath = path.resolve("Chinook.db");
 
@@ -81,5 +86,34 @@ async function resolveDbPath(localPath, url) {
 
 
 
-resolveDbPath(localPath, url)
+// resolveDbPath(localPath, url)
+
+
+
+
+
+let db; 
+
+async function resolveDbFile() {
+  const dbPath = path.resolve("Chinook.db"); 
+  return dbPath;
+}
+
+export async function getDb() {
+  if (!db) {
+    const dbPath = await resolveDbPath(localPath, url);
+    const datasource = new DataSource({
+      type: "sqlite",
+      database: dbPath,
+    });
+
+    db = await SqlDatabase.fromDataSourceParams({ appDataSource: datasource });
+  }
+
+  return db;
+}
+
+
+
+resolveDbFile()
 
