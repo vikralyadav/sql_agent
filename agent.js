@@ -115,5 +115,11 @@ export async function getDb() {
 
 
 
-resolveDbFile()
+// resolveDbFile()
 
+async function getSchema() {
+  const db = await getDb();
+  return await db.getTableInfo();
+}
+
+getSchema()
