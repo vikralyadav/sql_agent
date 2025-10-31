@@ -122,4 +122,50 @@ async function getSchema() {
   return await db.getTableInfo();
 }
 
-getSchema()
+// getSchema()
+
+
+
+import { createReactAgent } from "@langchain/langgraph/prebuilt";
+import { HumanInTheLoopMiddleware } from "@langchain/langgraph/middleware/human_in_the_loop";
+import { MemorySaver } from "@langchain/langgraph/checkpoint/memory";
+
+
+  const agent = await createReactAgent({
+    model,
+    tools,
+    systemPrompt,
+    middleware: [
+      new HumanInTheLoopMiddleware({
+        interruptOn: { sql_db_query: true },
+        descriptionPrefix: "Tool execution pending approval",
+      }),
+    ],
+    checkpointer: new InMemorySaver(),
+  });
+
+
+
+
+(async () => {
+  const question = "Which genre on average has the longest tracks?";
+  const config = { configurable: { thread_id: "1" } };
+
+  for await (const step of agent.stream(
+    { messages: [{ role: "user", content: question }] },
+    config,
+    { streamMode: "values" }
+  )) {
+    if (step.messages) {
+      const lastMessage = step.messages.at(-1);
+      console.log(`${lastMessage.role.toUpperCase()}: ${lastMessage.content}`);
+    } else if (step.__interrupt__) {
+      console.log("INTERRUPTED:");
+      const interrupt = step.__interrupt__[0];
+      for (const request of interrupt.value.action_requests) {
+        console.log(request.description);
+      }
+    }
+  }
+})();
+
