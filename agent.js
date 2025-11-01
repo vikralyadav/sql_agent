@@ -127,8 +127,8 @@ async function getSchema() {
 
 
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { HumanInTheLoopMiddleware } from "@langchain/langgraph/middleware/human_in_the_loop";
-import { MemorySaver } from "@langchain/langgraph/checkpoint/memory";
+import { humanInTheLoopMiddleware  } from "langchain";
+import { MemorySaver } from "@langchain/langgraph";
 
 
   const agent = await createReactAgent({
@@ -136,7 +136,7 @@ import { MemorySaver } from "@langchain/langgraph/checkpoint/memory";
     tools,
     systemPrompt,
     middleware: [
-      new HumanInTheLoopMiddleware({
+      new humanInTheLoopMiddleware ({
         interruptOn: { sql_db_query: true },
         descriptionPrefix: "Tool execution pending approval",
       }),
